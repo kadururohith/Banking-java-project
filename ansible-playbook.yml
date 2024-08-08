@@ -13,7 +13,7 @@
     command : sudo systemctl start docker
 
   - name: Deploy Docker Container
-    command: docker run -itd -p 8084:8081 kadururohith/project-demo:1
+    command: docker run -dt -p 8084:8081 kadururohith/project-demo:1
 
     
 
