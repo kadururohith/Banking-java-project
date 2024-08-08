@@ -30,13 +30,26 @@ pipeline{
         }
         stage('run dockerfile'){
           steps{
-               sh 'docker build -t myimg .'
+               sh 'docker build -t kadururohith/project-demo:1 .'
            }
          }
-        stage('port expose'){
+        stage('Login to docker hub and push the file'){
             steps{
-                sh 'docker run -dt -p 8091:8091 --name c000 myimg'
+                withCredentials([string(credentialsId: 'dockerhubpassword', variable: 'dockerhubpass')]) {
+                    sh 'docker login -u kadururohith -p ${dockerhubpass}'
+                }
             }
-        }   
+        }
+        stage('Push to docker hub'){
+          steps{
+               sh ' docker push kadururohith/project-demo:1 '
+           }
+         }
+        stage('Deployment stage using ansible'){
+          steps{
+               ansiblePlaybook become: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: ''
+           }
+         }
+        
     }
 }
